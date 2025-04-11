@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.ShujigoumaiCommentbackDao">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        a.id as id
+        ,a.shujigoumai_id as shujigoumaiId
+        ,a.yonghu_id as yonghuId
+        ,a.shujigoumai_commentback_text as shujigoumaiCommentbackText
+        ,a.reply_text as replyText
+        ,a.insert_time as insertTime
+        ,a.update_time as updateTime
+        ,a.create_time as createTime
+    </sql>
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.ShujigoumaiCommentbackView" >
+        SELECT
+        <include refid="Base_Column_List" />
+
+--         级联表的字段
+        ,shujigoumai.shujigoumai_uuid_number as shujigoumaiUuidNumber
+        ,shujigoumai.shujigoumai_name as shujigoumaiName
+        ,shujigoumai.shujigoumai_types as shujigoumaiTypes
+        ,shujigoumai.shujigoumai_photo as shujigoumaiPhoto
+        ,shujigoumai.shujigoumai_kucun_number as shujigoumaiKucunNumber
+        ,shujigoumai.shujigoumai_zuozhe as shujigoumaiZuozhe
+        ,shujigoumai.shujigoumai_chubanshe as shujigoumaiChubanshe
+        ,shujigoumai.shujigoumai_old_money as shujigoumaiOldMoney
+        ,shujigoumai.shujigoumai_new_money as shujigoumaiNewMoney
+        ,shujigoumai.shangxia_types as shangxiaTypes
+        ,shujigoumai.shujigoumai_delete as shujigoumaiDelete
+        ,shujigoumai.shujigoumai_content as shujigoumaiContent
+        ,yonghu.yonghu_name as yonghuName
+        ,yonghu.yonghu_photo as yonghuPhoto
+        ,yonghu.yonghu_phone as yonghuPhone
+        ,yonghu.yonghu_id_number as yonghuIdNumber
+        ,yonghu.yonghu_email as yonghuEmail
+        ,yonghu.new_money as newMoney
+        ,yonghu.yonghu_delete as yonghuDelete
+
+        FROM shujigoumai_commentback  a
+        left JOIN shujigoumai shujigoumai ON a.shujigoumai_id = shujigoumai.id
+        left JOIN yonghu yonghu ON a.yonghu_id = yonghu.id
+
+        <where>
+            <if test="params.ids != null">
+                and a.id in
+                <foreach item="item" index="index" collection="params.ids" open="(" separator="," close=")">
+                #{item}
+                </foreach>
+            </if>
+            <if test="params.shujigoumaiId != null and params.shujigoumaiId != ''">
+                and (
+                    a.shujigoumai_id = #{params.shujigoumaiId}
+                )
+            </if>
+            <if test="params.yonghuId != null and params.yonghuId != ''">
+                and (
+                    a.yonghu_id = #{params.yonghuId}
+                )
+            </if>
+            <if test=" params.shujigoumaiCommentbackText != '' and params.shujigoumaiCommentbackText != null and params.shujigoumaiCommentbackText != 'null' ">
+                and a.shujigoumai_commentback_text like CONCAT('%',#{params.shujigoumaiCommentbackText},'%')
+            </if>
+            <if test=" params.replyText != '' and params.replyText != null and params.replyText != 'null' ">
+                and a.reply_text like CONCAT('%',#{params.replyText},'%')
+            </if>
+            <if test=" params.insertTimeStart != '' and params.insertTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) >= UNIX_TIMESTAMP(#{params.insertTimeStart}) ]]>
+            </if>
+            <if test=" params.insertTimeEnd != '' and params.insertTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) <= UNIX_TIMESTAMP(#{params.insertTimeEnd}) ]]>
+            </if>
+            <if test=" params.updateTimeStart != '' and params.updateTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.update_time) >= UNIX_TIMESTAMP(#{params.updateTimeStart}) ]]>
+            </if>
+            <if test=" params.updateTimeEnd != '' and params.updateTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.update_time) <= UNIX_TIMESTAMP(#{params.updateTimeEnd}) ]]>
+            </if>
+
+                <!-- 判断书籍购买的id不为空 -->
+            <if test=" params.shujigoumaiIdNotNull != '' and params.shujigoumaiIdNotNull != null and params.shujigoumaiIdNotNull != 'null' ">
+                and a.shujigoumai_id IS NOT NULL
+            </if>
+            <if test=" params.shujigoumaiUuidNumber != '' and params.shujigoumaiUuidNumber != null and params.shujigoumaiUuidNumber != 'null' ">
+                and shujigoumai.shujigoumai_uuid_number like CONCAT('%',#{params.shujigoumaiUuidNumber},'%')
+            </if>
+            <if test=" params.shujigoumaiName != '' and params.shujigoumaiName != null and params.shujigoumaiName != 'null' ">
+                and shujigoumai.shujigoumai_name like CONCAT('%',#{params.shujigoumaiName},'%')
+            </if>
+            <if test="params.shujigoumaiTypes != null  and params.shujigoumaiTypes != ''">
+                and shujigoumai.shujigoumai_types = #{params.shujigoumaiTypes}
+            </if>
+
+            <if test="params.shujigoumaiKucunNumberStart != null  and params.shujigoumaiKucunNumberStart != '' ">
+                <![CDATA[  and shujigoumai.shujigoumai_kucun_number >= #{params.shujigoumaiKucunNumberStart}   ]]>
+            </if>
+            <if test="params.shujigoumaiKucunNumberEnd != null  and params.shujigoumaiKucunNumberEnd != '' ">
+                <![CDATA[  and shujigoumai.shujigoumai_kucun_number <= #{params.shujigoumaiKucunNumberEnd}   ]]>
+            </if>
+            <if test="params.shujigoumaiKucunNumber != null  and params.shujigoumaiKucunNumber != '' ">
+                and shujigoumai.shujigoumai_kucun_number = #{params.shujigoumaiKucunNumber}
+            </if>
+            <if test=" params.shujigoumaiZuozhe != '' and params.shujigoumaiZuozhe != null and params.shujigoumaiZuozhe != 'null' ">
+                and shujigoumai.shujigoumai_zuozhe like CONCAT('%',#{params.shujigoumaiZuozhe},'%')
+            </if>
+            <if test=" params.shujigoumaiChubanshe != '' and params.shujigoumaiChubanshe != null and params.shujigoumaiChubanshe != 'null' ">
+                and shujigoumai.shujigoumai_chubanshe like CONCAT('%',#{params.shujigoumaiChubanshe},'%')
+            </if>
+            <if test="params.shujigoumaiOldMoneyStart != null ">
+                <![CDATA[  and shujigoumai.shujigoumai_old_money >= #{params.shujigoumaiOldMoneyStart}   ]]>
+            </if>
+            <if test="params.shujigoumaiOldMoneyEnd != null ">
+                <![CDATA[  and shujigoumai.shujigoumai_old_money <= #{params.shujigoumaiOldMoneyEnd}   ]]>
+            </if>
+            <if test="params.shujigoumaiNewMoneyStart != null ">
+                <![CDATA[  and shujigoumai.shujigoumai_new_money >= #{params.shujigoumaiNewMoneyStart}   ]]>
+            </if>
+            <if test="params.shujigoumaiNewMoneyEnd != null ">
+                <![CDATA[  and shujigoumai.shujigoumai_new_money <= #{params.shujigoumaiNewMoneyEnd}   ]]>
+            </if>
+            <if test="params.shangxiaTypes != null  and params.shangxiaTypes != ''">
+                and shujigoumai.shangxia_types = #{params.shangxiaTypes}
+            </if>
+
+            <if test="params.shujigoumaiDeleteStart != null  and params.shujigoumaiDeleteStart != '' ">
+                <![CDATA[  and shujigoumai.shujigoumai_delete >= #{params.shujigoumaiDeleteStart}   ]]>
+            </if>
+            <if test="params.shujigoumaiDeleteEnd != null  and params.shujigoumaiDeleteEnd != '' ">
+                <![CDATA[  and shujigoumai.shujigoumai_delete <= #{params.shujigoumaiDeleteEnd}   ]]>
+            </if>
+            <if test="params.shujigoumaiDelete != null  and params.shujigoumaiDelete != '' ">
+                and shujigoumai.shujigoumai_delete = #{params.shujigoumaiDelete}
+            </if>
+            <if test=" params.shujigoumaiContent != '' and params.shujigoumaiContent != null and params.shujigoumaiContent != 'null' ">
+                and shujigoumai.shujigoumai_content like CONCAT('%',#{params.shujigoumaiContent},'%')
+            </if>
+                <!-- 判断用户的id不为空 -->
+            <if test=" params.yonghuIdNotNull != '' and params.yonghuIdNotNull != null and params.yonghuIdNotNull != 'null' ">
+                and a.yonghu_id IS NOT NULL
+            </if>
+            <if test=" params.yonghuName != '' and params.yonghuName != null and params.yonghuName != 'null' ">
+                and yonghu.yonghu_name like CONCAT('%',#{params.yonghuName},'%')
+            </if>
+            <if test=" params.yonghuPhone != '' and params.yonghuPhone != null and params.yonghuPhone != 'null' ">
+                and yonghu.yonghu_phone like CONCAT('%',#{params.yonghuPhone},'%')
+            </if>
+            <if test=" params.yonghuIdNumber != '' and params.yonghuIdNumber != null and params.yonghuIdNumber != 'null' ">
+                and yonghu.yonghu_id_number like CONCAT('%',#{params.yonghuIdNumber},'%')
+            </if>
+            <if test=" params.yonghuEmail != '' and params.yonghuEmail != null and params.yonghuEmail != 'null' ">
+                and yonghu.yonghu_email like CONCAT('%',#{params.yonghuEmail},'%')
+            </if>
+            <if test="params.newMoneyStart != null ">
+                <![CDATA[  and yonghu.new_money >= #{params.newMoneyStart}   ]]>
+            </if>
+            <if test="params.newMoneyEnd != null ">
+                <![CDATA[  and yonghu.new_money <= #{params.newMoneyEnd}   ]]>
+            </if>
+            <if test="params.yonghuDeleteStart != null  and params.yonghuDeleteStart != '' ">
+                <![CDATA[  and yonghu.yonghu_delete >= #{params.yonghuDeleteStart}   ]]>
+            </if>
+            <if test="params.yonghuDeleteEnd != null  and params.yonghuDeleteEnd != '' ">
+                <![CDATA[  and yonghu.yonghu_delete <= #{params.yonghuDeleteEnd}   ]]>
+            </if>
+            <if test="params.yonghuDelete != null  and params.yonghuDelete != '' ">
+                and yonghu.yonghu_delete = #{params.yonghuDelete}
+            </if>
+        </where>
+
+        order by a.${params.orderBy} desc 
+    </select>
+
+</mapper>

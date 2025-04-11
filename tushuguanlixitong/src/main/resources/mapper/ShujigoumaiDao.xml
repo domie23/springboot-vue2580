@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.ShujigoumaiDao">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        a.id as id
+        ,a.shujigoumai_uuid_number as shujigoumaiUuidNumber
+        ,a.shujigoumai_name as shujigoumaiName
+        ,a.shujigoumai_types as shujigoumaiTypes
+        ,a.shujigoumai_photo as shujigoumaiPhoto
+        ,a.shujigoumai_kucun_number as shujigoumaiKucunNumber
+        ,a.shujigoumai_zuozhe as shujigoumaiZuozhe
+        ,a.shujigoumai_chubanshe as shujigoumaiChubanshe
+        ,a.shujigoumai_old_money as shujigoumaiOldMoney
+        ,a.shujigoumai_new_money as shujigoumaiNewMoney
+        ,a.shangxia_types as shangxiaTypes
+        ,a.shujigoumai_delete as shujigoumaiDelete
+        ,a.shujigoumai_content as shujigoumaiContent
+        ,a.create_time as createTime
+    </sql>
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.ShujigoumaiView" >
+        SELECT
+        <include refid="Base_Column_List" />
+
+--         级联表的字段
+
+        FROM shujigoumai  a
+
+        <where>
+            <if test="params.ids != null">
+                and a.id in
+                <foreach item="item" index="index" collection="params.ids" open="(" separator="," close=")">
+                #{item}
+                </foreach>
+            </if>
+            <if test=" params.shujigoumaiUuidNumber != '' and params.shujigoumaiUuidNumber != null and params.shujigoumaiUuidNumber != 'null' ">
+                and a.shujigoumai_uuid_number like CONCAT('%',#{params.shujigoumaiUuidNumber},'%')
+            </if>
+            <if test=" params.shujigoumaiName != '' and params.shujigoumaiName != null and params.shujigoumaiName != 'null' ">
+                and a.shujigoumai_name like CONCAT('%',#{params.shujigoumaiName},'%')
+            </if>
+            <if test="params.shujigoumaiTypes != null and params.shujigoumaiTypes != ''">
+                and a.shujigoumai_types = #{params.shujigoumaiTypes}
+            </if>
+            <if test="params.shujigoumaiKucunNumberStart != null and params.shujigoumaiKucunNumberStart != ''">
+                <![CDATA[  and a.shujigoumai_kucun_number >= #{params.shujigoumaiKucunNumberStart}   ]]>
+            </if>
+            <if test="params.shujigoumaiKucunNumberEnd != null and params.shujigoumaiKucunNumberEnd != ''">
+                <![CDATA[  and a.shujigoumai_kucun_number <= #{params.shujigoumaiKucunNumberEnd}   ]]>
+            </if>
+             <if test="params.shujigoumaiKucunNumber != null and params.shujigoumaiKucunNumber != ''">
+                and a.shujigoumai_kucun_number = #{params.shujigoumaiKucunNumber}
+             </if>
+            <if test=" params.shujigoumaiZuozhe != '' and params.shujigoumaiZuozhe != null and params.shujigoumaiZuozhe != 'null' ">
+                and a.shujigoumai_zuozhe like CONCAT('%',#{params.shujigoumaiZuozhe},'%')
+            </if>
+            <if test=" params.shujigoumaiChubanshe != '' and params.shujigoumaiChubanshe != null and params.shujigoumaiChubanshe != 'null' ">
+                and a.shujigoumai_chubanshe like CONCAT('%',#{params.shujigoumaiChubanshe},'%')
+            </if>
+            <if test="params.shujigoumaiOldMoneyStart != null ">
+                <![CDATA[  and a.shujigoumai_old_money >= #{params.shujigoumaiOldMoneyStart}   ]]>
+            </if>
+            <if test="params.shujigoumaiOldMoneyEnd != null ">
+                <![CDATA[  and a.shujigoumai_old_money <= #{params.shujigoumaiOldMoneyEnd}   ]]>
+            </if>
+            <if test="params.shujigoumaiNewMoneyStart != null ">
+                <![CDATA[  and a.shujigoumai_new_money >= #{params.shujigoumaiNewMoneyStart}   ]]>
+            </if>
+            <if test="params.shujigoumaiNewMoneyEnd != null ">
+                <![CDATA[  and a.shujigoumai_new_money <= #{params.shujigoumaiNewMoneyEnd}   ]]>
+            </if>
+            <if test="params.shangxiaTypes != null and params.shangxiaTypes != ''">
+                and a.shangxia_types = #{params.shangxiaTypes}
+            </if>
+            <if test="params.shujigoumaiDeleteStart != null and params.shujigoumaiDeleteStart != ''">
+                <![CDATA[  and a.shujigoumai_delete >= #{params.shujigoumaiDeleteStart}   ]]>
+            </if>
+            <if test="params.shujigoumaiDeleteEnd != null and params.shujigoumaiDeleteEnd != ''">
+                <![CDATA[  and a.shujigoumai_delete <= #{params.shujigoumaiDeleteEnd}   ]]>
+            </if>
+             <if test="params.shujigoumaiDelete != null and params.shujigoumaiDelete != ''">
+                and a.shujigoumai_delete = #{params.shujigoumaiDelete}
+             </if>
+            <if test=" params.shujigoumaiContent != '' and params.shujigoumaiContent != null and params.shujigoumaiContent != 'null' ">
+                and a.shujigoumai_content like CONCAT('%',#{params.shujigoumaiContent},'%')
+            </if>
+
+        </where>
+
+        order by a.${params.orderBy} desc 
+    </select>
+
+</mapper>
